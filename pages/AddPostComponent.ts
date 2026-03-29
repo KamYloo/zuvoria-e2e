@@ -6,6 +6,7 @@ export class AddPostComponent {
   readonly sendButton: Locator;
   readonly toast: Locator;
   readonly fileInput: Locator;
+  readonly errorToast: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +15,9 @@ export class AddPostComponent {
     this.sendButton = page.locator('button:has-text("Send")');
     this.toast = page.locator("text=Post created successfully");
     this.fileInput = page.locator('input[type="file"]');
+    this.errorToast = page.locator(
+      "text=Description must be at most 1000 characters",
+    );
   }
 
   async createPost(content: string) {
