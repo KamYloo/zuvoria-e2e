@@ -4,7 +4,7 @@ import { DiscoverPage } from "../../pages/DiscoverPage";
 import { LoginPage } from "../../pages/LoginPage";
 
 test.describe("TC-SOC-01 [REQ-SOC-01]", () => {
-  test("Publikacja posta i widoczność w feedzie", async ({ browser }) => {
+  test("Publikacja posta", async ({ browser }) => {
     const user = {
       email: "test1@zuvoria.pl",
       pass: "admin1111",

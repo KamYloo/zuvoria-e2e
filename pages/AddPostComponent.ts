@@ -30,11 +30,6 @@ export class AddPostComponent {
     ]);
   }
 
-  async expectPostAtTop(content: string) {
-    await expect(this.page.locator(".post")).toContainText(content, {
-      timeout: 10000,
-    });
-  }
   async expectSuccess() {
     await expect(this.toast).toBeVisible();
     await expect(this.textarea).toHaveValue("");
