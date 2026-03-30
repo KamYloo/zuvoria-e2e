@@ -1,55 +1,103 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../pages/LoginPage';
-import { ChatPage } from '../../pages/ChatPage';
+import {expect, test} from '@playwright/test';
+import {LoginPage} from '../../pages/LoginPage';
+import {ChatPage} from '../../pages/ChatPage';
 
-test.describe('Moduł Czatu i WebSockets', () => {
+test.describe('Komunikacja | REQ-CHAT-02', () => {
+    test('TC-CHAT-02: Wysyłanie i odbieranie wiadomości tekstowej na czacie (WebSockets)', async ({ browser }) => {
+        const userA = { email: 'test5@zuvoria.pl', pass: 'admin1111', fullName: 'test5' };
+        const userB = { email: 'test6@zuvoria.pl', pass: 'admin1111', fullName: 'test6' };
 
-    test('Powinien utworzyć nowy czat i przesłać wiadomość na żywo (WebSockets)', async ({ browser }) => {
+        const contextUserA = await browser.newContext();
+        const contextUserB = await browser.newContext();
+        const pageA = await contextUserA.newPage();
+        const pageB = await contextUserB.newPage();
 
-        const user1 = { email: 'test1@zuvoria.pl', pass: 'admin1111', fullName: 'test1' };
-        const user2 = { email: 'test2@zuvoria.pl', pass: 'admin1111', fullName: 'test2' };
+        const loginPageA = new LoginPage(pageA);
+        const loginPageB = new LoginPage(pageB);
+        const chatPageA = new ChatPage(pageA);
+        const chatPageB = new ChatPage(pageB);
 
-        const contextUser1 = await browser.newContext();
-        const contextUser2 = await browser.newContext();
-        const page1 = await contextUser1.newPage();
-        const page2 = await contextUser2.newPage();
+        let senderSubscribedToChatRoom = false;
+        pageA.on('websocket', ws => {
+            if (ws.url().includes('/ws')) {
+                ws.on('framesent', event => {
+                    const payload = typeof event.payload === 'string' ? event.payload : '';
+                    if (payload.includes('SUBSCRIBE') && payload.includes('/exchange/chat.exchange/room.')) {
+                        senderSubscribedToChatRoom = true;
+                    }
+                });
+            }
+        });
 
-        const loginPage1 = new LoginPage(page1);
-        const loginPage2 = new LoginPage(page2);
-        const chatPage1 = new ChatPage(page1);
-        const chatPage2 = new ChatPage(page2);
+        let receiverSubscribedToChatRoom = false;
+        pageB.on('websocket', ws => {
+            if (ws.url().includes('/ws')) {
+                ws.on('framesent', event => {
+                    const payload = typeof event.payload === 'string' ? event.payload : '';
+                    if (payload.includes('SUBSCRIBE') && payload.includes('/exchange/chat.exchange/room.')) {
+                        receiverSubscribedToChatRoom = true;
+                    }
+                });
+            }
+        });
 
-        await loginPage1.login(user1.email, user1.pass);
-        await loginPage2.login(user2.email, user2.pass);
+        await test.step('Warunki wstępne: logowanie użytkownika A i B', async () => {
+            await loginPageA.login(userA.email, userA.pass);
+            await loginPageB.login(userB.email, userB.pass);
+        });
 
-        await chatPage1.goToChat();
-        await chatPage2.goToChat();
+        await test.step('Warunki wstępne: obie sesje otwierają moduł czatu', async () => {
+            await chatPageA.goToChat();
+            await chatPageB.goToChat();
+        });
 
+        await test.step('Warunki wstępne: para użytkowników ma aktywny pokój czatu i obie strony mają otwarte to samo okno rozmowy', async () => {
+            await chatPageA.ensureChatExistsWith(userB.fullName);
+            await chatPageA.selectChatUser(userB.fullName);
 
-        await chatPage1.ensureChatExistsWith(user2.fullName);
+            await pageB.reload();
+            await chatPageB.goToChat();
+            await chatPageB.selectChatUser(userA.fullName);
+            await expect(pageA.getByPlaceholder('Write message...')).toBeVisible();
+            await expect(pageB.getByPlaceholder('Write message...')).toBeVisible();
+        });
 
-        await chatPage1.selectChatUser(user2.fullName);
+        await test.step('Weryfikacja techniczna: obie strony zasubskrybowały kanał pokoju czatu (STOMP SUBSCRIBE)', async () => {
+            await expect.poll(() => senderSubscribedToChatRoom).toBeTruthy();
+            await expect.poll(() => receiverSubscribedToChatRoom).toBeTruthy();
+        });
 
-        await page2.reload();
+        const uniqueMessage = `Testowa wiadomosc ${Date.now()}`;
+        const messageInputA = pageA.getByPlaceholder('Write message...');
 
-        await chatPage2.selectChatUser(user1.fullName);
+        await test.step('Krok 1-2: użytkownik A wpisuje wiadomość i wysyła Enter', async () => {
+            await chatPageA.sendMessage(uniqueMessage, 'enter');
+            await expect(messageInputA).toHaveValue('', { timeout: 10000 });
+        });
 
+        await test.step('Oczekiwany rezultat 1: nadawca widzi własną wiadomość, pole jest wyczyszczone i widok jest przewinięty na dół', async () => {
+            await chatPageA.expectLatestMessage(uniqueMessage, true);
 
-        await page2.waitForTimeout(1500);
+            const centerA = pageA.locator('.chat .center');
+            await expect
+                .poll(async () => {
+                    return centerA.evaluate(el => {
+                        return el.scrollHeight - el.scrollTop - el.clientHeight;
+                    });
+                })
+                .toBeLessThan(80);
+        });
 
-        const uniqueMessage = `Zuvoria Playwright Test! ID: ${Date.now()}`;
+        await test.step('Oczekiwany rezultat 2: odbiorca B dostaje wiadomość w czasie rzeczywistym po odświeżeniu listy pokoi', async () => {
+            await chatPageB.expectLatestMessage(uniqueMessage, false);
 
-        await chatPage1.sendMessage(uniqueMessage);
-        await chatPage1.expectLatestMessage(uniqueMessage, true);
+            const latestIncoming = pageB.locator('.message').last();
+            await expect(latestIncoming.locator('strong')).toContainText(`${userA.fullName}:`);
+            await expect(latestIncoming).toContainText(uniqueMessage);
+            await expect(latestIncoming.locator('.info span')).toBeVisible();
+        });
 
-        await chatPage2.expectLatestMessage(uniqueMessage, false);
-
-        const replyMessage = `Odebrałem! WebSockets działają!`;
-        await chatPage2.sendMessage(replyMessage);
-
-        await chatPage1.expectLatestMessage(replyMessage, false);
-
-        await contextUser1.close();
-        await contextUser2.close();
+        await contextUserA.close();
+        await contextUserB.close();
     });
 });

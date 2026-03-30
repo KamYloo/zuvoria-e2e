@@ -12,8 +12,12 @@ export class ChatPage {
         await this.page.getByPlaceholder('Search User...').waitFor({ state: 'visible' });
     }
 
+    private chatListItems(userName: string) {
+        return this.page.locator('.userItem').filter({ hasText: userName });
+    }
+
     private chatListItem(userName: string) {
-        return this.page.locator('.userItem').filter({ hasText: userName }).first();
+        return this.chatListItems(userName).first();
     }
 
     private addUserResultItem(userName: string) {
@@ -64,44 +68,59 @@ export class ChatPage {
     }
 
     async deleteChatIfExists(userName: string) {
-        const listItem = this.chatListItem(userName);
-        if (!(await listItem.count()) || !(await listItem.isVisible())) {
-            return;
-        }
+        await this.deleteAllChatsWith(userName);
+    }
 
-        await listItem.hover();
+    async deleteAllChatsWith(userName: string) {
+        const searchInput = this.page.getByPlaceholder('Search User...');
+        await searchInput.fill(userName);
 
-        const deleteTriggers = [
-            listItem.locator('> i'),
-            listItem.locator('i').last(),
-        ];
+        const items = this.chatListItems(userName);
+        let guard = 0;
 
-        let clicked = false;
-        for (const trigger of deleteTriggers) {
-            if (await trigger.count()) {
-                this.page.once('dialog', async dialog => {
-                    await dialog.accept();
-                });
-                await trigger.first().click({ force: true });
-                clicked = true;
+        while ((await items.count()) > 0 && guard < 10) {
+            const before = await items.count();
+            const listItem = items.first();
+            await listItem.hover();
+
+            const deleteTriggers = [
+                listItem.locator('> i'),
+                listItem.locator('i').last(),
+            ];
+
+            let clicked = false;
+            for (const trigger of deleteTriggers) {
+                if (await trigger.count()) {
+                    this.page.once('dialog', async dialog => {
+                        await dialog.accept();
+                    });
+                    await trigger.first().click({ force: true });
+                    clicked = true;
+                    break;
+                }
+            }
+
+            if (!clicked) {
                 break;
             }
+
+            await expect(items).toHaveCount(before - 1, { timeout: 10000 });
+            guard += 1;
         }
 
-        if (!clicked) {
-            return;
-        }
-
-        await expect(this.chatListItem(userName)).toHaveCount(0, { timeout: 10000 });
+        await expect(items).toHaveCount(0, { timeout: 10000 });
+        await searchInput.fill('');
     }
 
     async ensureChatExistsWith(userName: string) {
-        await this.page.waitForSelector('.userItem', { timeout: 3000 }).catch(() => {});
+        const listSearchInput = this.page.getByPlaceholder('Search User...');
+        await listSearchInput.fill(userName);
 
-        const userItem = this.page.locator('.userItem').filter({ hasText: userName }).first();
+        await this.page.waitForTimeout(400);
 
-        if (await userItem.isVisible()) {
+        if ((await this.chatListItems(userName).count()) > 0) {
             console.log(`Czat z ${userName} już istnieje. Pomijam tworzenie.`);
+            await listSearchInput.fill('');
             return;
         }
 
@@ -109,8 +128,8 @@ export class ChatPage {
 
         await this.page.locator('.addUserBtn').click();
 
-        const searchInput = this.page.getByPlaceholder('Username...');
-        await searchInput.fill(userName);
+        const addUserSearchInput = this.page.getByPlaceholder('Username...');
+        await addUserSearchInput.fill(userName);
         await this.page.getByRole('button', { name: 'Search' }).click();
 
         const userResult = this.page.locator('.addUser .userList .user').filter({ hasText: userName }).first();
@@ -119,20 +138,28 @@ export class ChatPage {
 
         await this.page.getByRole('button', { name: 'Create Chat' }).click();
         await expect(this.page.getByText('ChatRoom created successfully.')).toBeVisible();
+        await expect(this.chatListItems(userName).first()).toBeVisible({ timeout: 10000 });
+        await listSearchInput.fill('');
     }
 
     async selectChatUser(userName: string) {
         const searchInput = this.page.getByPlaceholder('Search User...');
         await searchInput.fill(userName);
 
-        const userItem = this.chatListItem(userName);
+        const userItem = this.chatListItems(userName).first();
         await expect(userItem).toBeVisible();
         await userItem.click();
     }
 
-    async sendMessage(text: string) {
+    async sendMessage(text: string, submitWith: 'click' | 'enter' = 'click') {
         const messageInput = this.page.getByPlaceholder('Write message...');
         await messageInput.fill(text);
+
+        if (submitWith === 'enter') {
+            await messageInput.press('Enter');
+            return;
+        }
+
         await this.page.locator('.sendButton').click();
     }
 
