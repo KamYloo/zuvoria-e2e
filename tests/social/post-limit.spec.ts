@@ -16,32 +16,20 @@ test.describe("TC-SOC-02 [REQ-SOC-02]", () => {
     const page = await contextUser.newPage();
     const loginPage = new LoginPage(page);
     await loginPage.login(user.email, user.pass);
-
     await page.goto("/discover");
 
     const addPost = new AddPostComponent(page);
-
     const longContent = "a".repeat(1001);
 
     await addPost.textarea.click();
     await addPost.textarea.fill(longContent);
 
-    const requestPromise = page
-      .waitForRequest((req) => req.url().includes("/posts/create"), {
-        timeout: 2000,
-      })
-      .catch(() => null);
-
-    await addPost.sendButton.click();
+    await addPost.submitPost(longContent);
 
     await expect(
       page.getByText("Description must be at most", { exact: false }),
     ).toBeVisible({ timeout: 10000 });
 
-    // const request = await requestPromise;
-    // expect(request).toBeNull();
-
-    //await expect(addPost.textarea).toHaveValue(longContent);
     await expect(addPost.errorToast).toBeVisible();
   });
 });

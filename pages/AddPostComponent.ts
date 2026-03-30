@@ -19,7 +19,13 @@ export class AddPostComponent {
       "text=Description must be at most 1000 characters",
     );
   }
+  async submitPost(content: string) {
+    await this.textarea.click();
+    await this.textarea.fill(content);
+    await this.fileInput.setInputFiles("tests/fixtures/test.jpg");
 
+    await this.sendButton.click();
+  }
   async createPost(content: string) {
     await this.textarea.click();
 
