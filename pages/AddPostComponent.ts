@@ -38,10 +38,13 @@ export class AddPostComponent {
       ),
       this.sendButton.click(),
     ]);
+    await expect(this.toast).toBeVisible();
+    await expect(this.toast).toHaveCount(1);
+    await this.toast.waitFor({ state: "hidden", timeout: 5000 });
+    await expect(this.textarea).toHaveValue("");
   }
 
   async expectSuccess() {
-    await expect(this.toast).toBeVisible();
     await expect(this.textarea).toHaveValue("");
   }
 }
