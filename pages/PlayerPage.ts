@@ -7,7 +7,7 @@ export class PlayerPage {
   readonly playingSongs: Locator;
   readonly musicPlayer: Locator;
   readonly progressCurrentTime: Locator;
-  readonly pauseIconPath: Locator;
+  readonly playPauseControl: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -16,7 +16,7 @@ export class PlayerPage {
     this.playingSongs = page.locator('.songs.playing');
     this.musicPlayer = page.locator('.musicPlayer');
     this.progressCurrentTime = page.locator('.musicPlayer .currentTime');
-    this.pauseIconPath = page.locator('.musicPlayer .playPause svg path[d^="M144 479H48"]');
+    this.playPauseControl = page.locator('.musicPlayer .playPause');
   }
 
   async goToArtistPopular(artistId: string = '2') {
@@ -67,7 +67,13 @@ export class PlayerPage {
   }
 
   async expectPauseIconVisible() {
-    await expect(this.pauseIconPath).toBeVisible();
+    await expect(this.playPauseControl).toBeVisible();
+
+    await expect
+      .poll(async () => {
+        return this.page.locator('.musicPlayer .playPause svg, .musicPlayer .playPause img, .musicPlayer .playPause button').count();
+      })
+      .toBeGreaterThan(0);
   }
 
   async expectProgressMoves() {

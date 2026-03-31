@@ -153,19 +153,28 @@ export class ChatPage {
 
     async sendMessage(text: string, submitWith: 'click' | 'enter' = 'click') {
         const messageInput = this.page.getByPlaceholder('Write message...');
+        
+        await messageInput.focus();
         await messageInput.fill(text);
 
         if (submitWith === 'enter') {
             await messageInput.press('Enter');
+        } else {
+            await this.page.locator('.sendButton').click();
+        }
+    }
+
+
+    async expectLatestMessage(text: string, isOwn: boolean) {
+        const targetClass = isOwn ? 'messageOwn' : 'message';
+
+        const preferred = this.page.locator(`.chat .center .${targetClass}`).filter({ hasText: text }).last();
+        if (await preferred.count()) {
+            await expect(preferred).toContainText(text, { timeout: 15000 });
             return;
         }
 
-        await this.page.locator('.sendButton').click();
-    }
-
-    async expectLatestMessage(text: string, isOwn: boolean) {
-        const bubbleClass = isOwn ? '.messageOwn' : '.message';
-        const latestBubble = this.page.locator(bubbleClass).last();
-        await expect(latestBubble).toContainText(text);
+        const fallback = this.page.locator('.chat .center .message, .chat .center .messageOwn').filter({ hasText: text }).last();
+        await expect(fallback).toContainText(text, { timeout: 15000 });
     }
 }

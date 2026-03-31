@@ -19,29 +19,29 @@ test.describe('Komunikacja | REQ-CHAT-01', () => {
       await chatPage.deleteChatIfExists(targetUsername);
     });
 
-    await test.step('Kroki 1-4: przejście na /chat, otwarcie panelu dodawania, wpisanie test5 i Search', async () => {
+    await test.step('przejście na /chat, otwarcie panelu dodawania, wpisanie test5 i Search', async () => {
       await chatPage.openAddUserPanel();
       await chatPage.searchUserInAddPanel(targetUsername);
     });
 
-    await test.step('Kroki 5-6: wynik test5 jest widoczny i można go zaznaczyć', async () => {
+    await test.step('wynik test5 jest widoczny i można go zaznaczyć', async () => {
       await chatPage.expectUserVisibleInSearchResults(targetUsername);
       await chatPage.selectUserFromSearchResults(targetUsername);
       await chatPage.expectUserMarkedAsSelected(targetUsername);
     });
 
-    await test.step('Krok 7: Create Chat', async () => {
+    await test.step('Create Chat', async () => {
       await chatPage.clickCreateChat();
       await chatPage.expectCreateChatToast();
     });
 
-    await test.step('Kroki 8-9: nowy czat jest na liście i otwiera okno rozmowy z nagłówkiem test5', async () => {
+    await test.step('nowy czat jest na liście i otwiera okno rozmowy z nagłówkiem test5', async () => {
       await chatPage.expectChatVisibleOnLeftList(targetUsername);
       await chatPage.openChatFromLeftList(targetUsername);
       await chatPage.expectOpenedChatHeaderContains(targetUsername);
     });
 
-    await test.step('Warunek końcowy: cleanup - usuń nowo utworzony czat', async () => {
+    await test.step('Warunek końcowy - usuń nowo utworzony czat', async () => {
       await chatPage.deleteChatIfExists(targetUsername);
     });
   });

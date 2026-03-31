@@ -29,7 +29,6 @@ test.describe('Autoryzacja i Profil', () => {
             pass: 'admin1111',
         };
 
-        //  czekam na odpowiedź z endpointu logowania
         const loginResponsePromise = page.waitForResponse((response) => {
             const url = response.url();
             const method = response.request().method();
@@ -109,7 +108,6 @@ test.describe('Autoryzacja i Profil', () => {
             await context.clearCookies();
         });
 
-        //  czekam na odpowiedź z endpointu logowania
         const loginResponsePromise = page.waitForResponse((response) => {
             const url = response.url();
             const method = response.request().method();

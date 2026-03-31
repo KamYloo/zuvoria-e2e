@@ -29,26 +29,26 @@ test.describe('Odtwarzacz | REQ-PLAYER-01', () => {
 
       const { clickedSong, previouslyPlayingSong } = await playerPage.clickPlayableSongChangingSelection();
 
-      await test.step('Oczekiwany rezultat: przeglądarka wysyła GET do manifestu HLS i otrzymuje 200', async () => {
+      await test.step('Oczekiwany rezultat- przeglądarka wysyła GET do manifestu HLS i otrzymuje 200', async () => {
         await manifestResponsePromise;
       });
 
-      await test.step('Oczekiwany rezultat: wysyłane są żądania fragmentów HLS', async () => {
+      await test.step('Oczekiwany rezultat - wysyłane są żądania fragmentów HLS', async () => {
         await segmentRequestPromise;
       });
 
-      await test.step('Oczekiwany rezultat: kliknięty utwór ma klasę .playing', async () => {
+      await test.step('Oczekiwany rezultat - kliknięty utwór ma klasę .playing', async () => {
         await playerPage.expectSongIsPlaying(clickedSong);
       });
 
       if (previouslyPlayingSong) {
-        await test.step('Oczekiwany rezultat: poprzedni utwór traci klasę .playing', async () => {
+        await test.step('Oczekiwany rezultat - poprzedni utwór traci klasę .playing', async () => {
           await playerPage.expectSongIsNotPlaying(previouslyPlayingSong);
         });
       }
     });
 
-    await test.step('Oczekiwany rezultat: player startuje i pasek czasu zaczyna się przesuwać', async () => {
+    await test.step('Oczekiwany rezultat - player startuje i pasek czasu zaczyna się przesuwać', async () => {
       await playerPage.expectPlayerStarted();
       await playerPage.expectPauseIconVisible();
       await playerPage.expectProgressMoves();

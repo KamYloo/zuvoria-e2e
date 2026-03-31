@@ -1,6 +1,6 @@
-import path from "path";
 import { test, expect } from "@playwright/test";
 import { LoginPage } from "../../pages/LoginPage";
+import path = require("node:path");
 
 test.describe("Playlisty | REQ-PLAYLIST-01", () => {
   test("TC-PLAYLIST-01: Utworzenie playlisty z poprawnymi danymi", async ({
