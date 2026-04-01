@@ -1,1 +1,1 @@
-C:\Users\miecz\Desktop\zuvoria-e2e\tests\fixtures\avatar-test-1.png
+C:\studia\aitsi\zuvoria-e2e\tests\fixtures\avatar-test-1.png

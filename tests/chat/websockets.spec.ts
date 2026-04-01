@@ -2,6 +2,7 @@ import {expect, test} from '@playwright/test';
 import {LoginPage} from '../../pages/LoginPage';
 import {ChatPage} from '../../pages/ChatPage';
 
+//Mieczkowski Kamil
 test.describe('Komunikacja | REQ-CHAT-02', () => {
     test('TC-CHAT-02: Wysyłanie i odbieranie wiadomości tekstowej na czacie (WebSockets)', async ({ browser }) => {
         test.setTimeout(90000);
