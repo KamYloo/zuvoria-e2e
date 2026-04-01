@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from './pages/LoginPage';
-import { HomePage } from './pages/HomePage';
-import { ProfileEditPage } from './pages/ProfileEditPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { pickNextAvatar } from './utils/avatar.helper';
+import { LoginPage } from '../../pages/LoginPage';
+import { HomePage } from '../../pages/HomePage';
+import { ProfileEditPage } from '../../pages/ProfileEditPage';
+import { ProfilePage } from '../../pages/ProfilePage';
+import { pickNextAvatar } from '../utils/avatar.helper';
 
 test.describe('Autoryzacja i Profil', () => {
     test('TC-AUTH-01: Logowanie poprawnymi danymi (Happy Path)', async ({ page, context }) => {
@@ -86,7 +86,7 @@ test.describe('Autoryzacja i Profil', () => {
         });
 
         await test.step('Wpisanie poprawnego emaila i błędnego hasła', async () => {
-            await loginPage.login(user.email, user.wrongPass);
+            await loginPage.attemptLogin(user.email, user.wrongPass);
         });
 
         await test.step('Weryfikacja odpowiedzi HTTP z logowania', async () => {
