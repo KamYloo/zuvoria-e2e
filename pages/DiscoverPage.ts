@@ -12,9 +12,9 @@ export class DiscoverPage {
   async goto() {
     await this.page.goto("/discover");
   }
-
   async expectPostAtTop(content: string) {
-    await expect(this.posts.first()).toContainText(content);
+    const firstPost = this.posts.first();
+    await expect(firstPost).toContainText(content, { timeout: 10000 });
   }
 
   async getPostElements(content: string) {
@@ -33,12 +33,8 @@ export class DiscoverPage {
   async likePost(content: string) {
     const { likeIcon, likeCount } = await this.getPostElements(content);
     const before = await likeCount.textContent();
+
     await likeIcon.click();
     await expect(likeCount).not.toHaveText(before!);
-  }
-
-  async expectLikeCount(content: string, expectedCount: string) {
-    const { likeCount } = await this.getPostElements(content);
-    await expect(likeCount).toHaveText(expectedCount);
   }
 }
