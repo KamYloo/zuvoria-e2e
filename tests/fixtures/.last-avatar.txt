@@ -1,1 +1,1 @@
-C:\Users\maria\zuvoria-e2e\tests\fixtures\avatar-test-2.png
+D:\Projekt kamila do testów\tests\fixtures\avatar-test-2.png
