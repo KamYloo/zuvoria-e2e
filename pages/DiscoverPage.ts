@@ -3,10 +3,12 @@ import { Page, Locator, expect } from "@playwright/test";
 export class DiscoverPage {
   readonly page: Page;
   readonly posts: Locator;
+  readonly addStoryButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.posts = page.locator(".post");
+    this.addStoryButton = page.getByRole("button", { name: /add story|story/i });
   }
 
   async goto() {
@@ -36,5 +38,18 @@ export class DiscoverPage {
 
     await likeIcon.click();
     await expect(likeCount).not.toHaveText(before!);
+  }
+
+  async expectAddStoryVisible() {
+    if (await this.addStoryButton.count()) {
+      await expect(this.addStoryButton.first()).toBeVisible();
+      return;
+    }
+
+    await expect(this.page.getByText(/add story|story/i).first()).toBeVisible();
+  }
+
+  async expectStoryUserVisible(userText: string | RegExp) {
+    await expect(this.page.getByText(userText).first()).toBeVisible({ timeout: 10000 });
   }
 }

@@ -1,3 +1,4 @@
+// @ts-ignore
 import path from "path";
 import { test } from "@playwright/test";
 import { LoginPage } from "../../pages/LoginPage";
