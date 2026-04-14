@@ -1,0 +1,39 @@
+{
+  "cookies": [
+    {
+      "name": "jwt_zuvoria_v1",
+      "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0NEB6dXZvcmlhLnBsIiwiaWF0IjoxNzc2MTU1Mzk5LCJleHAiOjE3NzYxNjI1OTl9.NNlugWMYEZE1vUuEdkU9Yc9eB9OuhKPnT8ZEpOai_nZDjB9OVFzsBcxQM2f9_Hnm",
+      "domain": "api.zuvoria.pl",
+      "path": "/",
+      "expires": 1776162598.330392,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "refresh_zuvoria_v1",
+      "value": "d84902ba-5af7-47fb-a2e7-fa2aa2872fd8.a9446233-3a10-47bc-8124-60f7b6e382dc",
+      "domain": "api.zuvoria.pl",
+      "path": "/",
+      "expires": 1776760198.331273,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Strict"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://frontend.zuvoria.pl",
+      "localStorage": [
+        {
+          "name": "isLoggedIn",
+          "value": "1"
+        },
+        {
+          "name": "app-theme",
+          "value": "dark"
+        }
+      ]
+    }
+  ]
+}

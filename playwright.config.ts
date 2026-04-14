@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const isUiMode = process.argv.includes('--ui');
+const shouldRunGlobalSetup = !isUiMode && process.env.PW_DISABLE_GLOBAL_SETUP !== '1';
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -13,6 +16,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  globalSetup: shouldRunGlobalSetup ? './tests/setup/auth.global-setup.ts' : undefined,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -22,15 +26,15 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [['line'], ['html']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: 'https://frontend.zuvoria.pl',
 
-    trace: process.env.CI ? 'retain-on-failure' : 'on',
-    screenshot: process.env.CI ? 'only-on-failure' : 'on',
-    video: process.env.CI ? 'retain-on-failure' : 'on',
+    trace: 'off',
+    screenshot: 'off',
+    video: 'off',
   },
 
   /* Configure projects for major browsers */
