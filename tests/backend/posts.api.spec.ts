@@ -1,77 +1,84 @@
-import { test, expect, APIRequestContext, APIResponse } from "@playwright/test";
-// @ts-ignore
-import path from "path";
-// @ts-ignore
+import { test, expect, request } from "@playwright/test";
+import { AuthApi } from "../../pages/api/AuthApi";
 import fs from "fs";
+import path from "path";
 
+const API_BASE_URL = "https://api.zuvoria.pl/api";
+const API_USER_EMAIL = "test1@zuvoria.pl";
+const API_USER_PASSWORD = "admin1111";
+
+class PostApi {
+  constructor(
+    private request: any,
+    private baseUrl: string,
+  ) {}
+
+  async createPost(description: string, filePath: string) {
+    return await this.request.post(`${this.baseUrl}/posts/create`, {
+      multipart: {
+        description: description,
+        file: {
+          name: path.basename(filePath),
+          mimeType: "image/jpeg",
+          buffer: fs.readFileSync(filePath),
+        },
+      },
+    });
+  }
+
+  async getAllPosts() {
+    return await this.request.get(
+      `${this.baseUrl}/posts/all?sortDir=DESC&page=0&size=10`,
+    );
+  }
+
+  async likePost(postId: number | string) {
+    return await this.request.put(`${this.baseUrl}/post/${postId}/like`);
+  }
+}
+//Zuzanna Bobrykow
 test.describe("Backend API - Posty", () => {
-  let apiContext: APIRequestContext;
-  let response: APIResponse;
+  let authApi: AuthApi;
+  let postApi: PostApi;
   const filePath = path.resolve("tests/fixtures/test.jpg");
 
-  test.beforeAll(async ({ playwright }) => {
-    apiContext = await playwright.request.newContext({
-      baseURL: "https://api.zuvoria.pl",
-      storageState: "storageState.json",
+  test.beforeEach(async ({ request }) => {
+    authApi = new AuthApi(request, API_BASE_URL);
+    postApi = new PostApi(request, API_BASE_URL);
+
+    await authApi.loginAndExpect200({
+      email: API_USER_EMAIL,
+      password: API_USER_PASSWORD,
     });
   });
 
-  test("API-POST-01: Publikacja nowego posta", async () => {
-    await test.step("Wyslanie zadania POST /api/posts/create z poprawnymi danymi", async () => {
-      response = await apiContext.post("/api/posts/create", {
-        multipart: {
-          description: "Test API post",
-          file: {
-            name: "test.jpg",
-            mimeType: "image/jpeg",
-            buffer: fs.readFileSync(filePath),
-          },
-        },
-      });
-    });
+  test("API-POST-01: Publikacja nowego posta zwraca 201", async () => {
+    const response = await postApi.createPost("Testowy post API", filePath);
 
-    await test.step("Weryfikacja kodu odpowiedzi 201 Created", async () => {
-      expect(response.status()).toBe(201);
-    });
+    expect(response.status()).toBe(201);
+    const body = await response.json();
+    expect(body).toHaveProperty("id");
   });
 
-  test("API-POST-02: Proba publikacji posta przekraczajacego limit znakow (>1000)", async () => {
-    await test.step("Wyslanie zadania z przekroczonym limitem znakow", async () => {
-      response = await apiContext.post("/api/posts/create", {
-        multipart: {
-          description: "a".repeat(1001),
-          file: {
-            name: "test.jpg",
-            mimeType: "image/jpeg",
-            buffer: fs.readFileSync(filePath),
-          },
-        },
-      });
-    });
+  test("API-POST-02: Błąd 400 przy przekroczeniu limitu znaków (>1000)", async () => {
+    const longContent = "a".repeat(1001);
+    const response = await postApi.createPost(longContent, filePath);
 
-    await test.step("Weryfikacja bledu 400 Bad Request", async () => {
-      expect(response.status()).toBe(400);
-    });
+    expect(response.status()).toBe(400);
+    const body = await response.json();
+    expect(body.businessErrornDescription).toBeTruthy();
   });
 
-  test("API-POST-03: Polubienie posta", async () => {
-    let postId: string;
+  test("API-POST-03: Polubienie posta zwraca 200", async () => {
+    const listResponse = await postApi.getAllPosts();
+    expect(listResponse.status()).toBe(200);
 
-    await test.step("Pobranie listy postow", async () => {
-      const postsResponse = await apiContext.get(
-        "/api/posts/all?sortDir=DESC&page=0&size=10",
-      );
+    const posts = await listResponse.json();
+    const postId = posts.content[0]?.id;
 
-      const posts = await postsResponse.json();
-      postId = posts.content[0]?.id;
-    });
+    expect(postId, "Brak postów w bazie do polubienia").toBeDefined();
 
-    await test.step("Wyslanie zadania PUT /api/post/{id}/like", async () => {
-      response = await apiContext.put(`/api/post/${postId}/like`);
-    });
-
-    await test.step("Weryfikacja odpowiedzi 200 OK", async () => {
-      expect(response.status()).toBe(200);
-    });
+    const likeResponse = await postApi.likePost(postId);
+    expect(likeResponse.status()).toBe(200);
   });
 });

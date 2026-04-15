@@ -4,6 +4,7 @@ import { PlaylistPage } from "../../pages/PlaylistPage";
 
 test.use({ storageState: "storageState.json" });
 
+//Maria Marta Kulesza
 test("debug playlist endpoint", async ({ page }) => {
   const playlistPage = new PlaylistPage(page);
   const imagePath = path.resolve("tests/fixtures/test.jpg");

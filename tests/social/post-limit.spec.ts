@@ -5,18 +5,20 @@ import { DiscoverPage } from "../../pages/DiscoverPage";
 
 // Bobrykow Zuzanna
 test.describe("TC-SOC-02 [REQ-SOC-02]", () => {
+  test.use({ storageState: "storageState.json" });
+
   test("Próba publikacji posta przekraczającego limit znaków (>1000 znaków)", async ({
     page,
   }) => {
-    const loginPage = new LoginPage(page);
+    //const loginPage = new LoginPage(page);
     const addPost = new AddPostComponent(page);
     const discover = new DiscoverPage(page);
 
-    const user = { email: "test1@zuvoria.pl", pass: "admin1111" };
+    //const user = { email: "test1@zuvoria.pl", pass: "admin1111" };
     const longContent = "a".repeat(1001);
 
     await test.step("Warunki wstępne: Użytkownik jest poprawnie zalogowany i otwarta jest zakładka widoku odkrywania (/discover)", async () => {
-      await loginPage.login(user.email, user.pass);
+      //await loginPage.login(user.email, user.pass);
       await discover.goto();
     });
 
