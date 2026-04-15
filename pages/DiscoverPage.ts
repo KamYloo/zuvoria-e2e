@@ -8,7 +8,9 @@ export class DiscoverPage {
   constructor(page: Page) {
     this.page = page;
     this.posts = page.locator(".post");
-    this.addStoryButton = page.getByRole("button", { name: /add story|story/i });
+    this.addStoryButton = page.getByRole("button", {
+      name: /add story|story/i,
+    });
   }
 
   async goto() {
@@ -50,6 +52,8 @@ export class DiscoverPage {
   }
 
   async expectStoryUserVisible(userText: string | RegExp) {
-    await expect(this.page.getByText(userText).first()).toBeVisible({ timeout: 10000 });
+    await expect(this.page.getByText(userText).first()).toBeVisible({
+      timeout: 10000,
+    });
   }
 }

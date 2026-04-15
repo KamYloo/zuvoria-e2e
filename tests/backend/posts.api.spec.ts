@@ -36,8 +36,9 @@ class PostApi {
     return await this.request.put(`${this.baseUrl}/post/${postId}/like`);
   }
 }
+
 //Zuzanna Bobrykow
-test.describe("Backend API - Posty", () => {
+test.describe("Backend API - Posts", () => {
   let authApi: AuthApi;
   let postApi: PostApi;
   const filePath = path.resolve("tests/fixtures/test.jpg");
