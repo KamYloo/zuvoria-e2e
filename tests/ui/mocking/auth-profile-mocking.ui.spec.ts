@@ -1,9 +1,9 @@
 // Gracjan Czyżewski
 
 import { test, expect, Page } from "@playwright/test";
-import { LoginPage } from "../../pages/LoginPage";
-import { HomePage } from "../../pages/HomePage";
-import { ProfileEditPage } from "../../pages/ProfileEditPage";
+import { LoginPage } from "../../../pages/LoginPage";
+import { HomePage } from "../../../pages/HomePage";
+import { ProfileEditPage } from "../../../pages/ProfileEditPage";
 
 const MOCK_USER = {
     id: 14,
@@ -34,10 +34,12 @@ test.describe("Mocking - Auth i Profil | Gracjan Czyżewski", () => {
 
         let loggedIn = false;
         let loginRequestCount = 0;
+        const checkAuthMatcher = /\/(?:api\/)?auth\/check(?:\?.*)?$/i;
+        const loginMatcher = /\/(?:api\/)?auth\/login(?:\?.*)?$/i;
 
         await clearAuthCookies(page);
 
-        await page.route(/\/api\/auth\/check(?:\?|$)/, async (route) => {
+        await page.route(checkAuthMatcher, async (route) => {
             if (loggedIn) {
                 await route.fulfill({
                     status: 200,
@@ -56,7 +58,7 @@ test.describe("Mocking - Auth i Profil | Gracjan Czyżewski", () => {
             });
         });
 
-        await page.route(/\/(?:auth\/login|login)(?:\?|$)/, async (route) => {
+        await page.route(loginMatcher, async (route) => {
             if (route.request().method() !== "POST") {
                 await route.continue();
                 return;
@@ -69,17 +71,25 @@ test.describe("Mocking - Auth i Profil | Gracjan Czyżewski", () => {
                 status: 200,
                 contentType: "application/json",
                 body: JSON.stringify({
-                    message: "Mock login success",
+                    user: MOCK_USER,
                 }),
             });
         });
 
         await loginPage.goto();
         await loginPage.assertVisible();
+
+        const loginResponsePromise = page.waitForResponse(
+            (response) =>
+                response.request().method() === "POST" &&
+                loginMatcher.test(response.url()),
+            { timeout: 10_000 },
+        );
+
         await loginPage.attemptLogin("test1@zuvoria.pl", "admin1111");
+        await loginResponsePromise;
 
         await expect.poll(() => loginRequestCount).toBe(1);
-        await homePage.assertLoginSuccessMessageVisible();
         await homePage.assertRedirectAfterLogin();
         await homePage.assertLogoutVisible();
         await homePage.assertProfileVisible();

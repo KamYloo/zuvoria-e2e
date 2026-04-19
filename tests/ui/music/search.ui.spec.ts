@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { AlbumPage } from "../../pages/AlbumPage";
+import { AlbumPage } from "../../../pages/AlbumPage";
 
 //Maria Marta Kulesza
 test.describe("Muzyka | State Management", () => {

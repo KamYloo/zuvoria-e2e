@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../../pages/LoginPage";
-import { HomePage } from "../../pages/HomePage";
-import { ProfileEditPage } from "../../pages/ProfileEditPage";
-import { ProfilePage } from "../../pages/ProfilePage";
-import { pickNextAvatar } from "../utils/avatar.helper";
+import { LoginPage } from "../../../pages/LoginPage";
+import { HomePage } from "../../../pages/HomePage";
+import { ProfileEditPage } from "../../../pages/ProfileEditPage";
+import { ProfilePage } from "../../../pages/ProfilePage";
+import { pickNextAvatar } from "../../utils/avatar.helper";
 
 //Czyżewski Gracjan
 test.describe("Autoryzacja i Profil", () => {

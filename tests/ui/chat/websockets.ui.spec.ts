@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test';
-import {LoginPage} from '../../pages/LoginPage';
-import {ChatPage} from '../../pages/ChatPage';
+import {LoginPage} from '../../../pages/LoginPage';
+import {ChatPage} from '../../../pages/ChatPage';
 
 //Mieczkowski Kamil
 test.describe('Komunikacja | REQ-CHAT-02', () => {

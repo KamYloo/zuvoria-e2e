@@ -5,6 +5,9 @@
   "scripts": {
     "test": "playwright test",
     "test:ui": "playwright test --ui",
+    "test:ui:e2e": "playwright test tests/ui",
+    "test:api": "playwright test tests/api",
+    "state:refresh": "playwright test tests/ui/mocking/chat-story-route-mocking.ui.spec.ts --project=chromium",
     "codegen": "playwright codegen"
   },
   "keywords": [],

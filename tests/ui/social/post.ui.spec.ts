@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
-import { AddPostComponent } from "../../pages/AddPostComponent";
-import { DiscoverPage } from "../../pages/DiscoverPage";
-import { LoginPage } from "../../pages/LoginPage";
+import { AddPostComponent } from "../../../pages/AddPostComponent";
+import { DiscoverPage } from "../../../pages/DiscoverPage";
+import { LoginPage } from "../../../pages/LoginPage";
 
 //Bobrykow Zuzanna
 test.describe("TC-SOC-01 [REQ-SOC-01]", () => {

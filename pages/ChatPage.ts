@@ -20,8 +20,12 @@ export class ChatPage {
         return this.chatListItems(userName).first();
     }
 
+    private addUserPanel() {
+        return this.page.locator('.addUser');
+    }
+
     private addUserResultItem(userName: string) {
-        return this.page.locator('.addUser .userList .user').filter({ hasText: userName }).first();
+        return this.addUserPanel().locator('.userList .user').filter({ hasText: userName }).first();
     }
 
     async openAddUserPanel() {

@@ -1,41 +1,11 @@
-import { test, expect, request } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { AuthApi } from "../../pages/api/AuthApi";
-import fs from "fs";
 import path from "path";
+import { PostApi } from "../../pages/api/PostApi";
 
 const API_BASE_URL = "https://api.zuvoria.pl/api";
 const API_USER_EMAIL = "test1@zuvoria.pl";
 const API_USER_PASSWORD = "admin1111";
-
-class PostApi {
-  constructor(
-    private request: any,
-    private baseUrl: string,
-  ) {}
-
-  async createPost(description: string, filePath: string) {
-    return await this.request.post(`${this.baseUrl}/posts/create`, {
-      multipart: {
-        description: description,
-        file: {
-          name: path.basename(filePath),
-          mimeType: "image/jpeg",
-          buffer: fs.readFileSync(filePath),
-        },
-      },
-    });
-  }
-
-  async getAllPosts() {
-    return await this.request.get(
-      `${this.baseUrl}/posts/all?sortDir=DESC&page=0&size=10`,
-    );
-  }
-
-  async likePost(postId: number | string) {
-    return await this.request.put(`${this.baseUrl}/post/${postId}/like`);
-  }
-}
 
 //Zuzanna Bobrykow
 test.describe("Backend API - Posts", () => {

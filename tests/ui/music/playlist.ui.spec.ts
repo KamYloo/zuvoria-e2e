@@ -1,7 +1,7 @@
 // @ts-ignore
 import path from "path";
 import { test } from "@playwright/test";
-import { PlaylistPage } from "../../pages/PlaylistPage";
+import { PlaylistPage } from "../../../pages/PlaylistPage";
 
 //Maria Marta Kulesza
 test.describe("Playlisty | State Management", () => {

@@ -2,20 +2,20 @@
   "cookies": [
     {
       "name": "jwt_zuvoria_v1",
-      "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0NEB6dXZvcmlhLnBsIiwiaWF0IjoxNzc2MjcyNTkzLCJleHAiOjE3NzYyNzk3OTN9.Ek6dTRw--sm1kuYfOztuno5dDQ38esnOUB1ba_GbVhtcxHXrAW2fldqafzNkYpGf",
+      "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0NEB6dXZvcmlhLnBsIiwiaWF0IjoxNzc2NjI0NTIzLCJleHAiOjE3NzY2MzE3MjN9.L1WT3JefS7DncLdVzuVesAf65yN24ApDuKRTAAxzftlwVa2j4hfDT5lJOBzr0tYr",
       "domain": "api.zuvoria.pl",
       "path": "/",
-      "expires": 1776279794.482428,
+      "expires": 1776631723.537375,
       "httpOnly": true,
       "secure": true,
       "sameSite": "Strict"
     },
     {
       "name": "refresh_zuvoria_v1",
-      "value": "935502ee-401b-4dca-a67e-a98403c8986f.b487eb87-f9be-4085-8cbf-62666a097314",
+      "value": "000f5cbc-b786-49f6-8706-8ffd4e17583b.d3ed978c-65ad-45ee-997f-2e875bbcc9f0",
       "domain": "api.zuvoria.pl",
       "path": "/",
-      "expires": 1776877394.482852,
+      "expires": 1777229323.538346,
       "httpOnly": true,
       "secure": true,
       "sameSite": "Strict"

@@ -1,7 +1,5 @@
 import { test, expect, APIRequestContext, APIResponse } from "@playwright/test";
-// @ts-ignore
 import path from "path";
-// @ts-ignore
 import fs from "fs";
 
 //Maria Marta Kulesza

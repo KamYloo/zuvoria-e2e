@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { DiscoverPage } from "../../pages/DiscoverPage";
-import { AddPostComponent } from "../../pages/AddPostComponent";
+import { DiscoverPage } from "../../../pages/DiscoverPage";
+import { AddPostComponent } from "../../../pages/AddPostComponent";
 
 const MOCK_USER = {
   id: 4,

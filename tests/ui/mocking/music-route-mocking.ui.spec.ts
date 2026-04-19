@@ -1,5 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
-import { AlbumPage } from "../../pages/AlbumPage";
+import { AlbumPage } from "../../../pages/AlbumPage";
 
 //Maria Marta Kulesza
 async function expectNotRedirectedToLogin(page: Page) {

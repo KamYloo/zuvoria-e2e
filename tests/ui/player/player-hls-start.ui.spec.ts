@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { PlayerPage } from "../../pages/PlayerPage";
+import { PlayerPage } from "../../../pages/PlayerPage";
 
 //Mieczkowski Kamil
 test.describe("Odtwarzacz | REQ-PLAYER-01", () => {
